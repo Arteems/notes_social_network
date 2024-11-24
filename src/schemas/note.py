@@ -1,15 +1,29 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class Editor(BaseModel):
-    id: int
+    id: str
 
 
 class Viewer(BaseModel):
-    id: int
+    id: str
 
 
 class Note(BaseModel):
-    id: int
+    id: str
     title: str
-    authorised_users: list[Editor, Viewer]
+    content: str
+    editors: list[Editor]
+    viewers: list[Viewer]
+
+
+class UpdateNote(BaseModel):
+    title: str | None = None
+    content: str | None = None
+    editors: list[Editor] | None = None
+    viewers: list[Viewer] | None = None
+
+
+
+
+
