@@ -1,4 +1,6 @@
 from motor import motor_asyncio
+
+from .factories import RepositoryFactory
 from ..config import mongo_settings
 from .mongo_repository import MongoRepository
 
@@ -9,8 +11,8 @@ notes_collection = db[mongo_settings.collections.NOTES.value]
 users_collection = db[mongo_settings.collections.USERS.value]
 
 
-notes_repository = MongoRepository(notes_collection)
-users_repository = MongoRepository(users_collection)
+notes_repository = RepositoryFactory.create_repository(notes_collection)
+users_repository = RepositoryFactory.create_repository(users_collection)
 
 
 
