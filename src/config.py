@@ -10,6 +10,7 @@ class Collections(Enum):
 class MongoSettings(BaseModel):
     url: str = "mongodb://localhost:27017"
     collections: Collections = Collections.NOTES
+    database_name: str = "NotesSocialNetwork"
 
 
 mongo_settings = MongoSettings()
