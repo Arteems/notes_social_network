@@ -10,13 +10,5 @@ db = client[mongo_settings.database_name]
 notes_collection = db[mongo_settings.collections.NOTES.value]
 users_collection = db[mongo_settings.collections.USERS.value]
 
-
 notes_repository = RepositoryFactory.create_repository(notes_collection)
 users_repository = RepositoryFactory.create_repository(users_collection)
-
-
-
-
-
-
-
