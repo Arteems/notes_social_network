@@ -7,7 +7,7 @@ from repository import Repository
 class Factory(ABC):
 
     @abstractmethod
-    def create_repository(self) -> Repository:
+    def create_repository(self, storage) -> Repository:
         pass
 
 
