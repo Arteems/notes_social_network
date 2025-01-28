@@ -1,6 +1,6 @@
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
-
+from bson.errors import InvalidId
 from src.repositories.repository import Repository
 
 
@@ -10,7 +10,10 @@ class MongoRepository(Repository):
         self.collection = collection
 
     async def get(self, id: str) -> dict | None:
-        result = await self.collection.find_one({"_id": ObjectId(id)})
+        try:
+            result = await self.collection.find_one({"_id": ObjectId(id)})
+        except InvalidId as e:
+            return None
         if result:
             result["id"] = id
             del result["_id"]
@@ -18,6 +21,9 @@ class MongoRepository(Repository):
         return None
 
     async def update(self, id: str, new_data: dict) -> dict | None:
+        """ Обновление записи и проверка было ли совершено
+        обновление. если в базе данных было совершено изменение
+         хотябы одной записи, то возвращается обновленная запись с указанным id, иначе None"""
         result = await self.collection.update_one(
             {"_id": ObjectId(id)}, {"$set": new_data}
         )

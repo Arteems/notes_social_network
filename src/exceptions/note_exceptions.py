@@ -1,7 +1,6 @@
 class NoteNotFoundError(Exception):
     def __init__(self, note_id: str):
         super().__init__(f"Заметка {note_id} не найдена")
-        self.note_id = note_id
 
 
 class NoteCreateError(Exception):
