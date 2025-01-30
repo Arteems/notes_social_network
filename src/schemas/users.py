@@ -5,6 +5,7 @@ class CreateUser(BaseModel):
     username: str
     mail: EmailStr
     password: str
+    role: str
 
 
 class User(CreateUser):
@@ -19,3 +20,4 @@ class UpdateUser(BaseModel):
     username: str | None
     password: str | None
     mail: EmailStr | None
+    role: str

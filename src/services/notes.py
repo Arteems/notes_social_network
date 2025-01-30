@@ -1,5 +1,5 @@
 from ..repositories.repository import Repository
-from ..schemas.note import Note, UpdateNote
+from ..schemas.note import Note, UpdateNote, CreateNote
 from ..exceptions.exceptions import (
     NoteUpdateError,
     NoteCreateError,
@@ -24,7 +24,7 @@ class NoteService:
             raise NoteNotFoundError(note_id=note_id)
         return Note(**existing_note)
 
-    async def create(self, note: Note) -> str:
+    async def create(self, note: CreateNote) -> str:
         try:
             result = await self.repository.create(note.model_dump())
             return result
