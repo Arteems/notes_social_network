@@ -10,3 +10,8 @@ class UserUpdateError(Exception):
         super().__init__(f"Не удалось обновить пользователя {user_id}")
 
 
+class InvalidUserRoleError(Exception):
+    def __init__(self, user_id: str):
+        super().__init__(f"Не подходящая роль пользователя {user_id}")
+
+
