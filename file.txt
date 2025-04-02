@@ -1,0 +1,7 @@
+Изменение note schemas наследование Note от CreateNote
+В NoteService(create) передаем не Note , а CreateNote
+В Сущности юзера в методе delete изменил **note на note.id
+
+
+
+создать отдельные классы viewer и editor
