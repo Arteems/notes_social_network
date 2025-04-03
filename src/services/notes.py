@@ -1,11 +1,11 @@
-from ..repositories.repository import Repository
-from ..schemas.note import Note, UpdateNote, CreateNote
 from ..exceptions.exceptions import (
-    NoteUpdateError,
     NoteCreateError,
     NoteDeleteError,
     NoteNotFoundError,
+    NoteUpdateError,
 )
+from ..repositories.repository import Repository
+from ..schemas.note import CreateNote, Note, UpdateNote
 
 
 class NoteService:
@@ -31,7 +31,7 @@ class NoteService:
         except Exception as e:
             raise NoteCreateError(user_id=note.id, note_title=note.title) from e
 
-    async def update(self, note_id: str, new_data: UpdateNote) -> dict:
+    async def update(self, note_id: str, new_data: UpdateNote) -> Note:
         note = await self.get(note_id)
 
         try:

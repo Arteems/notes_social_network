@@ -1,5 +1,3 @@
-
-
 class UserNotFoundError(Exception):
     def __init__(self, user_id: str):
         super().__init__(f"Пользователь {user_id} не найден")
@@ -13,5 +11,3 @@ class UserUpdateError(Exception):
 class InvalidUserRoleError(Exception):
     def __init__(self, user_id: str):
         super().__init__(f"Не подходящая роль пользователя {user_id}")
-
-
