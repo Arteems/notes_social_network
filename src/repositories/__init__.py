@@ -1,9 +1,8 @@
 from motor import motor_asyncio
 
-from .factories import RepositoryFactory
 from ..config import mongo_settings
+from .factories import RepositoryFactory
 from .mongo_repository import MongoRepository
-
 
 client = motor_asyncio.AsyncIOMotorClient(mongo_settings.url)
 db = client[mongo_settings.database_name]

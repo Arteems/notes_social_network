@@ -1,13 +1,13 @@
-from src.db.crud import (
-    get_document,
-    get_all_documents,
-    create_document,
-    delete_document,
-    update_document,
-)
 import asyncio
 import random
 
+from src.db.crud import (
+    create_document,
+    delete_document,
+    get_all_documents,
+    get_document,
+    update_document,
+)
 
 simple_dict = {"text": 1, "text2": 2, "_id": 13}
 

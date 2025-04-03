@@ -2,7 +2,6 @@ from src.exceptions.note_exceptions import NoteNotFoundError
 from src.exceptions.user_exceptions import InvalidUserRoleError, UserNotFoundError
 from src.repositories.repository import Repository
 from src.schemas.note import CreateNote, Note, UpdateNote
-from src.schemas.users import User
 from src.services.notes import NoteService
 
 
@@ -34,7 +33,9 @@ class User:
         return Note(**result)
 
     async def get(self, note_id: str) -> Note:
-        self._check_user(self.user_id, "Viewer")  # Предположим, что Viewer тоже может получать заметки
+        self._check_user(
+            self.user_id, "Viewer"
+        )  # Предположим, что Viewer тоже может получать заметки
         result = await self.service.get(note_id)
         return result
 
@@ -53,4 +54,3 @@ class User:
     async def delete_editor(self, role: str, editor_id: str, note_id: str) -> bool:
         self._check_user(self.user_id, role)
         return await self.service.delete_editor(editor_id, note_id)
-

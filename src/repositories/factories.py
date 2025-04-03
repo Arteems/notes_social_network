@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+
 from motor.motor_asyncio import AsyncIOMotorCollection
+
 from .mongo_repository import MongoRepository
 from .repository import Repository
 
