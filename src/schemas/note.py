@@ -14,8 +14,9 @@ class CreateNote(BaseModel):
     content: str = ""
     editors: list[str | None] = []
     viewers: list[str | None] = []
-    owner_id: str
+
 
 
 class Note(CreateNote):
     id: str
+    owner_id: str

@@ -1,7 +1,7 @@
 from pydantic import EmailStr
 
-from schemas.note import CreateNote, Note, UpdateNote
-from services.notes import NoteService
+from src.schemas.note import CreateNote, Note, UpdateNote
+from src.services.notes import NoteService
 from src.exceptions.user_exceptions import (
     InvalidUserRoleError,
     UserNotFoundError,

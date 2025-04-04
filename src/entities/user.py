@@ -30,7 +30,7 @@ class User:
     async def update(self, role: str, note_id: str, update_data: UpdateNote) -> Note:
         self._check_user(self.user_id, role)
         result = await self.service.update(note_id, update_data)
-        return Note(**result)
+        return result
 
     async def get(self, note_id: str) -> Note:
         self._check_user(

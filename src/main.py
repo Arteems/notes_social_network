@@ -1,34 +1,11 @@
-import asyncio
-import random
+from fastapi import FastAPI
 
-from src.db.crud import (
-    create_document,
-    delete_document,
-    get_all_documents,
-    get_document,
-    update_document,
-)
-
-simple_dict = {"text": 1, "text2": 2, "_id": 13}
-
-# note = asyncio.run(create_document(simple_dict))
-#
-# print(note)
+from src.api.routers.access_router import access_router
+from src.api.routers.notes_router import notes_router
+from src.api.routers.users_router import users_router
 
 
-# async def main():
-#     all_notes = await get_all_documents()
-#     for note in all_notes:
-#         print(await update_document(note["_id"], update_data={"text": random.randint(10, 100_000)}))
-#
-#
-# asyncio.run(main())
-
-
-print(asyncio.run(delete_document(13)))
-
-
-#
-# update_note = update_document(note)
-#
-# delete_document(note)
+app = FastAPI()
+app.include_router(users_router)
+app.include_router(notes_router)
+app.include_router(access_router)

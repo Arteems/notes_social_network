@@ -1,18 +1,19 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr, BaseModel
 
 
 class CreateUser(BaseModel):
     username: str
     mail: EmailStr
     password: str
+    role: str
 
 
 class User(CreateUser):
     id: str
 
 
-class DeleteUser(BaseModel):
-    id: str
+# class DeleteUser(BaseModel):
+#     user_id: str
 
 
 class UpdateUser(BaseModel):

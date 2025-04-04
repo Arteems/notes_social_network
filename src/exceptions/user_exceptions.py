@@ -1,13 +1,24 @@
-class UserNotFoundError(Exception):
+from fastapi import HTTPException, status
+
+
+class UserNotFoundError(HTTPException):
     def __init__(self, user_id: str):
-        super().__init__(f"Пользователь {user_id} не найден")
+        super().__init__(
+            status.HTTP_404_NOT_FOUND, detail=f"Пользователь {user_id} не найден"
+        )
 
 
-class UserUpdateError(Exception):
+class UserUpdateError(HTTPException):
     def __init__(self, user_id: str):
-        super().__init__(f"Не удалось обновить пользователя {user_id}")
+        super().__init__(
+            status.HTTP_400_BAD_REQUEST,
+            detail=f"Не удалось обновить пользователя {user_id}",
+        )
 
 
-class InvalidUserRoleError(Exception):
+class InvalidUserRoleError(HTTPException):
     def __init__(self, user_id: str):
-        super().__init__(f"Не подходящая роль пользователя {user_id}")
+        super().__init__(
+            status.HTTP_403_FORBIDDEN,
+            detail=f"Не подходящая роль пользователя {user_id}",
+        )

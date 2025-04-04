@@ -1,4 +1,7 @@
 from enum import Enum
+import os
+
+from pydantic import BaseModel
 
 from pydantic import BaseModel
 
@@ -9,7 +12,7 @@ class Collections(Enum):
 
 
 class MongoSettings(BaseModel):
-    url: str = "mongodb://localhost:27017"
+    url: str = os.getenv("MONGO_URL")
     collections: Collections = Collections.NOTES
     database_name: str = "NotesSocialNetwork"
 

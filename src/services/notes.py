@@ -1,4 +1,4 @@
-from ..exceptions.exceptions import (
+from ..exceptions.note_exceptions import (
     NoteCreateError,
     NoteDeleteError,
     NoteNotFoundError,
@@ -6,6 +6,7 @@ from ..exceptions.exceptions import (
 )
 from ..repositories.repository import Repository
 from ..schemas.note import CreateNote, Note, UpdateNote
+import logging
 
 
 class NoteService:
@@ -26,10 +27,10 @@ class NoteService:
 
     async def create(self, note: CreateNote) -> str:
         try:
-            result = await self.repository.create(note.model_dump())
-            return result
+            return await self.repository.create(note.model_dump())
         except Exception as e:
-            raise NoteCreateError(user_id=note.id, note_title=note.title) from e
+            logging.error(f"Ошибка при создании заметки: {e}")
+            raise AssertionError
 
     async def update(self, note_id: str, new_data: UpdateNote) -> Note:
         note = await self.get(note_id)
@@ -38,9 +39,9 @@ class NoteService:
             result = await self.repository.update(
                 note_id, new_data.model_dump(exclude_unset=True)
             )
-            return result
-        except Exception as e:
-            raise NoteUpdateError(note_id=note_id, user_id=note.owner_id) from e
+            return Note(**result)
+        except Exception:
+            raise NoteUpdateError(note_id=note_id, user_id=note.owner_id)
 
     async def delete(self, note_id: str) -> bool:
         existing_note = await self.get(note_id)
@@ -50,8 +51,8 @@ class NoteService:
         try:
             result = await self.repository.delete(note_id)
             return result
-        except Exception as e:
-            raise NoteDeleteError(note_id=note_id) from e
+        except Exception:
+            raise NoteDeleteError(note_id=note_id)
 
     async def delete_viewer(self, note_id: str, viewer_id: str) -> bool:
         note = await self.repository.get(note_id)
