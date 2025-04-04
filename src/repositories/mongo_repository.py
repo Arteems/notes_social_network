@@ -1,18 +1,23 @@
-from src.repositories.repository import Repository
-
-from motor.motor_asyncio import AsyncIOMotorCollection
-from bson import ObjectId
-from bson.errors import InvalidId
-from typing import Any, Dict
 import logging
 
+from bson import ObjectId
+from bson.errors import InvalidId
+from motor.motor_asyncio import AsyncIOMotorCollection
 
-class MongoRepository(Repository):
+
+class MongoRepository:
 
     def __init__(self, collection: AsyncIOMotorCollection):
         self.collection = collection
 
-    async def get(self, id: str) -> Dict[str, Any] | None:
+    @staticmethod
+    def __prepare_id(data: dict) -> dict:
+        result_dict = data
+        result_dict["id"] = str(data.get("_id"))
+        del result_dict["_id"]
+        return data
+
+    async def get_by_id(self, id: str) -> dict | None:
         try:
             # Попытка найти документ по ID
             result = await self.collection.find_one({"_id": ObjectId(id)})
@@ -23,15 +28,21 @@ class MongoRepository(Repository):
             # Логируем другие возможные ошибки
             logging.error(f"Ошибка при получении документа: {e}")
             return None
-
         if result:
-            # Преобразуем результат в словарь, если это необходимо
-            result_dict = dict(result)  # Преобразуем Mapping в dict
-            result_dict["id"] = str(id)  # Используем id в строковом формате
-            del result_dict["_id"]
-            return result_dict
-
+            return self.__prepare_id(dict(result))
         return None  # Возвращаем None, если документ не найден
+
+    async def get_user_by_username(self, username: str) -> dict | None:
+        result = await self.collection.find_one({"username": username})
+        if result is not None:
+            return self.__prepare_id(dict(result))
+        return None
+
+    async def get_user_by_mail(self, mail: str) -> dict | None:
+        result = await self.collection.find_one({"mail": mail})
+        if result is not None:
+            return self.__prepare_id(dict(result))
+        return None
 
     async def update(self, id: str, new_data: dict) -> dict | None:
         """Обновление записи и проверка было ли совершено
@@ -42,7 +53,7 @@ class MongoRepository(Repository):
             {"_id": ObjectId(id)}, {"$set": new_data}
         )
         if result.modified_count > 0:
-            return await self.get(id)
+            return await self.get_by_id(id)
         return None
 
     async def create(self, data: dict) -> str:

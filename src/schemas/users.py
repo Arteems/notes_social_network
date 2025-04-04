@@ -1,19 +1,17 @@
-from pydantic import EmailStr, BaseModel
+from bson import ObjectId
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class CreateUser(BaseModel):
     username: str
     mail: EmailStr
     password: str
-    role: str
 
 
-class User(CreateUser):
+class User(BaseModel):
     id: str
-
-
-# class DeleteUser(BaseModel):
-#     user_id: str
+    username: str
+    mail: EmailStr
 
 
 class UpdateUser(BaseModel):

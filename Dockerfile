@@ -1,47 +1,33 @@
-FROM python:3.12.5-slim
+ARG ALPINE_VERSION=3.20
+ARG PYTHON_VERSION=3.13
+ARG PYTHON_TAG=${PYTHON_VERSION}-alpine${ALPINE_VERSION}
+ARG UV_TAG=alpine${ALPINE_VERSION}
 
 
+FROM ghcr.io/astral-sh/uv:${UV_TAG} AS uv_tool
 
-WORKDIR /coin_game_service
 
-RUN apt update \
-    && apt upgrade -y  \
-    && pip install --no-cache-dir --upgrade poetry
+FROM python:${PYTHON_TAG} AS dependencies
+WORKDIR /app
+COPY ./uv.lock ./pyproject.toml ./
+COPY --from=uv_tool /usr/local/bin/uv /bin/
+RUN uv export --format requirements-txt --no-hashes --no-dev -o ./requirements.txt
 
-COPY poetry.lock pyproject.toml ./
 
-RUN poetry self add poetry-plugin-export
+FROM python:${PYTHON_TAG}
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+WORKDIR /app/src
+COPY --from=dependencies /app/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r ./requirements.txt
+RUN addgroup -S appgroup && \
+    adduser -SHD appuser -G appgroup && \
+    chown appuser:appgroup -R /app
+USER appuser
+COPY --chown=appuser:appgroup ./src ./
 
-RUN poetry export --without-hashes -f requirements.txt --output requirements.txt
-
-RUN apt update \
-    && apt upgrade -y  \
-    && pip install --no-cache-dir --upgrade -r ./requirements.txt
-
-COPY ./ ./
-
-RUN groupadd -r coin_game_service && useradd --no-log-init -r -g coin_game_service coin_game_service
-
-USER coin_game_service
 
 EXPOSE 8080
 
-CMD ["uvicorn", "src.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8080"]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4", "--port", "8080"]

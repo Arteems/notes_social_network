@@ -1,32 +1,54 @@
 from pydantic import EmailStr
 
-from src.schemas.note import CreateNote, Note, UpdateNote
-from src.services.notes import NoteService
-from src.exceptions.user_exceptions import (
+from exceptions.user_exceptions import (
+    EmailAlreadyExistsError,
+    UsernameAlreadyExistsError,
+)
+from repositories import MongoRepository
+from exceptions.user_exceptions import (
     InvalidUserRoleError,
     UserNotFoundError,
     UserUpdateError,
 )
-from src.repositories.repository import Repository
-from src.schemas.users import CreateUser, UpdateUser, User
+from schemas.note import CreateNote, Note, UpdateNote
+from schemas.users import CreateUser, UpdateUser, User
+from services.notes import NoteService
 
 
 class UserService:
     """Сервис для работы с пользователем"""
 
-    def __init__(self, user_repository: Repository, note_service: NoteService):
+    def __init__(self, user_repository: MongoRepository, note_service: NoteService):
         self.__user_repository = user_repository
         self.__note_service = note_service
 
     async def get(self, user_id: str) -> User:
-        user = await self.__user_repository.get(user_id)
+        user = await self.__user_repository.get_by_id(user_id)
         if not user:
-            raise UserNotFoundError(user_id=user_id)
+            raise UserNotFoundError(user_id)
         return User(**user)
 
-    async def create(self, user: CreateUser) -> str:
-        result = await self.__user_repository.create(user.model_dump())
-        return result
+    async def get_by_username(self, username: str) -> User:
+        user = await self.__user_repository.get_user_by_username(username)
+        if not user:
+            raise UserNotFoundError(username)
+        return User(**user)
+
+    async def get_by_mail(self, email: EmailStr) -> User:
+        user = await self.__user_repository.get_user_by_mail(str(email))
+        if not user:
+            raise UserNotFoundError(email)
+        return User(**user)
+
+    async def create(self, new_user: CreateUser) -> str:
+        try:
+            if await self.get_by_mail(new_user.mail) is not None:
+                raise EmailAlreadyExistsError(str(new_user.mail))
+            if await self.get_by_username(new_user.username) is not None:
+                raise UsernameAlreadyExistsError(new_user.username)
+        except UserNotFoundError:
+            result = await self.__user_repository.create(new_user.model_dump())
+            return result
 
     async def update(self, user_id: str, new_data: UpdateUser) -> User:
         result = await self.__user_repository.update(
